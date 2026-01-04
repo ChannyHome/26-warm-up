@@ -34,7 +34,7 @@ file_formatter = logging.Formatter(
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from app.db import Base, engine, get_db
 from app import crud
@@ -46,29 +46,35 @@ from app.schemas import (
 # 개발 편의: 테이블 없으면 자동 생성 (init.sql로 이미 만들면 그냥 통과)
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Company Backend (DB CRUD)")
+app = FastAPI(
+    title="Company Backend (DB CRUD)",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+)
 
-@app.get("/health")
+router = APIRouter()
+
+@router.get("/health")
 def health():
     return {"ok": True}
 
 # ---------- Departments ----------
-@app.get("/departments", response_model=list[DepartmentOut])
+@router.get("/departments", response_model=list[DepartmentOut])
 def list_departments(db: Session = Depends(get_db)):
     return crud.dept_list(db)
 
-@app.post("/departments", response_model=DepartmentOut)
+@router.post("/departments", response_model=DepartmentOut)
 def create_department(data: DepartmentCreate, db: Session = Depends(get_db)):
     return crud.dept_create(db, data)
 
-@app.put("/departments/{dept_id}", response_model=DepartmentOut)
+@router.put("/departments/{dept_id}", response_model=DepartmentOut)
 def update_department(dept_id: int, data: DepartmentUpdate, db: Session = Depends(get_db)):
     obj = crud.dept_get(db, dept_id)
     if not obj:
         raise HTTPException(404, "Department not found")
     return crud.dept_update(db, obj, data)
 
-@app.delete("/departments/{dept_id}")
+@router.delete("/departments/{dept_id}")
 def delete_department(dept_id: int, db: Session = Depends(get_db)):
     obj = crud.dept_get(db, dept_id)
     if not obj:
@@ -77,22 +83,22 @@ def delete_department(dept_id: int, db: Session = Depends(get_db)):
     return {"ok": True}
 
 # ---------- Employees ----------
-@app.get("/employees", response_model=list[EmployeeOut])
+@router.get("/employees", response_model=list[EmployeeOut])
 def list_employees(db: Session = Depends(get_db)):
     return crud.emp_list(db)
 
-@app.post("/employees", response_model=EmployeeOut)
+@router.post("/employees", response_model=EmployeeOut)
 def create_employee(data: EmployeeCreate, db: Session = Depends(get_db)):
     return crud.emp_create(db, data)
 
-@app.put("/employees/{emp_id}", response_model=EmployeeOut)
+@router.put("/employees/{emp_id}", response_model=EmployeeOut)
 def update_employee(emp_id: int, data: EmployeeUpdate, db: Session = Depends(get_db)):
     obj = crud.emp_get(db, emp_id)
     if not obj:
         raise HTTPException(404, "Employee not found")
     return crud.emp_update(db, obj, data)
 
-@app.delete("/employees/{emp_id}")
+@router.delete("/employees/{emp_id}")
 def delete_employee(emp_id: int, db: Session = Depends(get_db)):
     obj = crud.emp_get(db, emp_id)
     if not obj:
@@ -100,10 +106,12 @@ def delete_employee(emp_id: int, db: Session = Depends(get_db)):
     crud.emp_delete(db, obj)
     return {"ok": True}
 
+app.include_router(router, prefix="/api")
+
 if __name__ == "__main__":
     import uvicorn
     print("\n🚀 서버 시작 중...")
-    print("📝 API 문서: http://localhost:8500/docs")
+    print("📝 API 문서: http://localhost:8500/api/docs")
     print("⏹️  종료: Ctrl+C 또는 VS Code 디버거의 Stop 버튼\n")
     
     try:

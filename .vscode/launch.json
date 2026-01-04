@@ -5,9 +5,9 @@
       "name": "Python: main.py (Backend 실행)",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/backend/app/main.py",
+      "program": "${workspaceFolder}/backend-fastapi/app/main.py",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
+      "cwd": "${workspaceFolder}/backend-fastapi",
       "justMyCode": true
     },
     {
@@ -16,7 +16,7 @@
       "request": "launch",
       "program": "${file}",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
+      "cwd": "${workspaceFolder}/backend-fastapi",
       "justMyCode": true
     }
   ]
