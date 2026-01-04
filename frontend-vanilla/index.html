@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Warm-up Portal (Vanilla)</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">W</div>
+        <div class="brand-text">
+          <div class="brand-title">Warm-up Portal</div>
+          <div class="brand-sub">Vanilla UI • Dept / Employee</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-item" href="#/dashboard" data-route="dashboard">
+          <span class="nav-dot"></span>
+          대시보드
+        </a>
+        <a class="nav-item" href="#/departments" data-route="departments">
+          <span class="nav-dot"></span>
+          부서 목록
+        </a>
+        <a class="nav-item" href="#/employees" data-route="employees">
+          <span class="nav-dot"></span>
+          사원 목록
+        </a>
+
+        <div class="nav-sep"></div>
+
+        <a class="nav-item" href="#/departments/new" data-route="departments-new">
+          <span class="nav-dot"></span>
+          부서 등록
+        </a>
+        <a class="nav-item" href="#/employees/new" data-route="employees-new">
+          <span class="nav-dot"></span>
+          사원 등록
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="pill">
+          API: <span id="apiBaseLabel" class="mono"></span>
+        </div>
+        <button id="btnTheme" class="btn ghost">테마 토글</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="pageTitle" class="page-title">대시보드</h1>
+          <p id="pageDesc" class="page-desc">부서/사원 정보를 조회하고 등록합니다.</p>
+        </div>
+
+        <div class="topbar-right">
+          <button id="btnRefresh" class="btn">새로고침</button>
+        </div>
+      </header>
+
+      <section id="view" class="view">
+        <!-- views injected by JS -->
+      </section>
+
+      <footer class="footer">
+        <span class="muted">Vanilla Portal • Tabs(Hash Router) • FastAPI 연동</span>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div id="modalTitle" class="modal-title">등록</div>
+          <div id="modalSub" class="modal-sub muted">필수 항목을 입력하세요.</div>
+        </div>
+        <button id="modalClose" class="icon-btn" aria-label="close">✕</button>
+      </div>
+
+      <form id="modalForm" class="modal-body">
+        <!-- form fields injected by JS -->
+      </form>
+
+      <div class="modal-foot">
+        <button id="modalCancel" class="btn ghost" type="button">취소</button>
+        <button id="modalSubmit" class="btn primary" type="submit" form="modalForm">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastHost" class="toast-host"></div>
+
+  <script src="./app.js"></script>
+</body>
+
+</html>

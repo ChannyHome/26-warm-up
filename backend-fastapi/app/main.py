@@ -35,6 +35,7 @@ file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.db import Base, engine, get_db
 from app import crud
@@ -50,6 +51,16 @@ app = FastAPI(
     title="Company Backend (DB CRUD)",
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 router = APIRouter()
