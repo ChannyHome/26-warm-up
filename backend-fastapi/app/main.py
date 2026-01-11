@@ -38,19 +38,15 @@ from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.db import Base, engine, get_db
-from app import crud
-from app.schemas import (
-    DepartmentOut, DepartmentCreate, DepartmentUpdate,
-    EmployeeOut, EmployeeCreate, EmployeeUpdate
-)
+from .routers import default_router, departments_router, employees_router
 
 # 개발 편의: 테이블 없으면 자동 생성 (init.sql로 이미 만들면 그냥 통과)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Company Backend (DB CRUD)",
-    docs_url="/api/docs",
-    openapi_url="/api/openapi.json",
+    docs_url="/docs",
+    openapi_url="/openapi.json",
 )
 app.add_middleware(
     CORSMiddleware,
@@ -63,61 +59,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-router = APIRouter()
-
-@router.get("/health")
-def health():
-    return {"ok": True}
-
-# ---------- Departments ----------
-@router.get("/departments", response_model=list[DepartmentOut])
-def list_departments(db: Session = Depends(get_db)):
-    return crud.dept_list(db)
-
-@router.post("/departments", response_model=DepartmentOut)
-def create_department(data: DepartmentCreate, db: Session = Depends(get_db)):
-    return crud.dept_create(db, data)
-
-@router.put("/departments/{dept_id}", response_model=DepartmentOut)
-def update_department(dept_id: int, data: DepartmentUpdate, db: Session = Depends(get_db)):
-    obj = crud.dept_get(db, dept_id)
-    if not obj:
-        raise HTTPException(404, "Department not found")
-    return crud.dept_update(db, obj, data)
-
-@router.delete("/departments/{dept_id}")
-def delete_department(dept_id: int, db: Session = Depends(get_db)):
-    obj = crud.dept_get(db, dept_id)
-    if not obj:
-        raise HTTPException(404, "Department not found")
-    crud.dept_delete(db, obj)
-    return {"ok": True}
-
-# ---------- Employees ----------
-@router.get("/employees", response_model=list[EmployeeOut])
-def list_employees(db: Session = Depends(get_db)):
-    return crud.emp_list(db)
-
-@router.post("/employees", response_model=EmployeeOut)
-def create_employee(data: EmployeeCreate, db: Session = Depends(get_db)):
-    return crud.emp_create(db, data)
-
-@router.put("/employees/{emp_id}", response_model=EmployeeOut)
-def update_employee(emp_id: int, data: EmployeeUpdate, db: Session = Depends(get_db)):
-    obj = crud.emp_get(db, emp_id)
-    if not obj:
-        raise HTTPException(404, "Employee not found")
-    return crud.emp_update(db, obj, data)
-
-@router.delete("/employees/{emp_id}")
-def delete_employee(emp_id: int, db: Session = Depends(get_db)):
-    obj = crud.emp_get(db, emp_id)
-    if not obj:
-        raise HTTPException(404, "Employee not found")
-    crud.emp_delete(db, obj)
-    return {"ok": True}
-
-app.include_router(router, prefix="/api")
+app.include_router(default_router)
+app.include_router(departments_router)
+app.include_router(employees_router)
 
 if __name__ == "__main__":
     import uvicorn
